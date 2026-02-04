@@ -6,7 +6,14 @@ import { ResultsDashboard } from "@/components/results-dashboard"
 import { LearningRoadmap } from "@/components/learning-roadmap"
 import { Button } from "@/components/ui/button"
 import type { StudentProfile, AnalysisResult } from "@/lib/types"
-import { Sparkles, ArrowLeft, Zap, Target, BookOpen, Github } from "lucide-react"
+import {
+  Sparkles,
+  ArrowLeft,
+  Zap,
+  Target,
+  BookOpen,
+  Github
+} from "lucide-react"
 
 export default function Home() {
   const [profile, setProfile] = useState<StudentProfile | null>(null)
@@ -16,7 +23,6 @@ export default function Home() {
 
   const handleSubmit = async (studentProfile: StudentProfile) => {
     setIsLoading(true)
-
     try {
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -24,15 +30,13 @@ export default function Home() {
         body: JSON.stringify(studentProfile)
       })
 
-      if (!response.ok) {
-        throw new Error("Analysis failed")
-      }
+      if (!response.ok) throw new Error("Analysis failed")
 
       const analysisResult = await response.json()
       setProfile(studentProfile)
       setResult(analysisResult)
     } catch (error) {
-      console.error("Error:", error)
+      console.error(error)
       alert("Analysis failed. Make sure Ollama is running!")
     } finally {
       setIsLoading(false)
@@ -48,83 +52,83 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold tracking-tight">SkillTune</h1>
-                <p className="text-xs text-muted-foreground">AI-Powered Skill Gap Analyzer</p>
-              </div>
+      <header className="sticky top-0 z-50 border-b border-border/50 bg-card/40 backdrop-blur-xl">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+              <Sparkles className="h-5 w-5 text-primary" />
             </div>
-            {result && (
-              <Button variant="ghost" size="sm" onClick={handleReset}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                New Analysis
-              </Button>
-            )}
+            <div>
+              <h1 className="text-xl font-bold">SkillTune</h1>
+              <p className="text-xs text-muted-foreground">
+                AI-Powered Skill Gap Analyzer
+              </p>
+            </div>
           </div>
+
+          {result && (
+            <Button variant="ghost" size="sm" onClick={handleReset}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              New Analysis
+            </Button>
+          )}
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-12">
         {!result ? (
-          <div className="flex flex-col gap-12">
-            {/* Hero Section */}
+          <div className="flex flex-col gap-16">
+            {/* Hero */}
             <section className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-balance">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Bridge the gap between
-                <span className="text-primary"> education </span>
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  {" "}education{" "}
+                </span>
                 and
-                <span className="text-accent"> employment</span>
+                <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                  {" "}employment
+                </span>
               </h2>
-              <p className="text-lg text-muted-foreground text-pretty">
-                Analyze your skills, discover gaps, and get a personalized learning roadmap
-                to become job-ready for your dream role.
+              <p className="text-lg text-muted-foreground">
+                Analyze your skills, identify gaps, and receive a personalized
+                roadmap to become job-ready faster.
               </p>
             </section>
 
             {/* Features */}
-            <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-              <div className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50 bg-card/30">
-                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-3">
-                  <Zap className="h-6 w-6 text-primary" />
+            <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  icon: Zap,
+                  title: "Instant Analysis",
+                  desc: "AI-powered real-time skill gap detection"
+                },
+                {
+                  icon: Target,
+                  title: "Job Matching",
+                  desc: "Align your skills with industry roles"
+                },
+                {
+                  icon: BookOpen,
+                  title: "Learning Path",
+                  desc: "Personalized roadmap & resources"
+                },
+                {
+                  icon: Github,
+                  title: "GitHub Insights",
+                  desc: "Extract skills from your repositories"
+                }
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="p-6 rounded-xl border border-border/50 bg-card/30 text-center"
+                >
+                  <item.icon className="h-6 w-6 mx-auto text-primary mb-3" />
+                  <h3 className="font-semibold mb-1">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </div>
-                <h3 className="font-semibold mb-1">Instant Analysis</h3>
-                <p className="text-sm text-muted-foreground">
-                  Get real-time skill gap analysis powered by AI
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50 bg-card/30">
-                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mb-3">
-                  <Target className="h-6 w-6 text-accent" />
-                </div>
-                <h3 className="font-semibold mb-1">Job Matching</h3>
-                <p className="text-sm text-muted-foreground">
-                  Match your skills with industry requirements
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50 bg-card/30">
-                <div className="w-12 h-12 rounded-full bg-chart-3/20 flex items-center justify-center mb-3">
-                  <BookOpen className="h-6 w-6 text-chart-3" />
-                </div>
-                <h3 className="font-semibold mb-1">Learning Path</h3>
-                <p className="text-sm text-muted-foreground">
-                  Personalized roadmap with curated resources
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50 bg-card/30">
-                <div className="w-12 h-12 rounded-full bg-chart-5/20 flex items-center justify-center mb-3">
-                  <Github className="h-6 w-6 text-chart-5" />
-                </div>
-                <h3 className="font-semibold mb-1">GitHub Analysis</h3>
-                <p className="text-sm text-muted-foreground">
-                  Extract skills from your GitHub portfolio
-                </p>
-              </div>
+              ))}
             </section>
 
             {/* Form */}
@@ -133,30 +137,29 @@ export default function Home() {
             </section>
           </div>
         ) : (
-          <div className="flex flex-col gap-6">
-            {/* Tab Navigation */}
-            <div className="flex gap-2 p-1 rounded-lg bg-secondary/50 w-fit mx-auto">
+          <div className="flex flex-col gap-8">
+            {/* Tabs */}
+            <div className="flex gap-2 mx-auto bg-secondary/50 p-1 rounded-lg">
               <Button
-                variant={activeTab === "results" ? "default" : "ghost"}
                 size="sm"
+                variant={activeTab === "results" ? "default" : "ghost"}
                 onClick={() => setActiveTab("results")}
               >
                 <Target className="h-4 w-4 mr-2" />
                 Results
               </Button>
               <Button
-                variant={activeTab === "roadmap" ? "default" : "ghost"}
                 size="sm"
+                variant={activeTab === "roadmap" ? "default" : "ghost"}
                 onClick={() => setActiveTab("roadmap")}
               >
                 <BookOpen className="h-4 w-4 mr-2" />
-                Learning Roadmap
+                Roadmap
               </Button>
             </div>
 
-            {/* Content */}
             {activeTab === "results" ? (
-              profile && <ResultsDashboard result={result} profile={profile} />
+              profile && <ResultsDashboard profile={profile} result={result} />
             ) : (
               <LearningRoadmap result={result} />
             )}
@@ -165,11 +168,45 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 mt-12 py-6">
-        <div className="container mx-auto px-4">
-          <p className="text-center text-sm text-muted-foreground">
-            Built with AI to bridge the education-employment gap • Powered by Ollama 🦙
-          </p>
+      <footer className="border-t border-border/50 bg-card/40 mt-24">
+        <div className="container mx-auto px-4 py-16 grid gap-10 md:grid-cols-4">
+          <div>
+            <h3 className="font-bold text-lg mb-2">SkillTune</h3>
+            <p className="text-sm text-muted-foreground">
+              Helping students become industry-ready using AI-driven insights.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">About</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>Our Mission</li>
+              <li>How It Works</li>
+              <li>Careers</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">FAQ</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>Is it free?</li>
+              <li>How accurate is AI?</li>
+              <li>GitHub analysis?</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-3">Resources</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>Docs</li>
+              <li>Privacy Policy</li>
+              <li>Contact</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="text-center text-sm text-muted-foreground border-t border-border/50 py-6">
+          Built with ❤️ • Powered by Ollama 🦙
         </div>
       </footer>
     </main>
