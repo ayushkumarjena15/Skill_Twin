@@ -377,6 +377,7 @@ JSON Format:
     careerAdvice,
     matchingJobs,
     agentsUsed,
+    allUserSkills: allStudentSkills,
     timetable
   }
 }

@@ -38,7 +38,7 @@ const teamMembers = [
     {
         name: "Mr. Anshuman Nayak",
         role: "Backend Developer",
-        image: null,
+        image: "/team/anshuman-nayak.jpg",
         bio: "Focuses on designing scalable backend architectures, APIs, and secure server-side systems to power robust applications.",
         socials: {
             linkedin: "https://www.linkedin.com/in/anshuman-nayak-16432a246?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",

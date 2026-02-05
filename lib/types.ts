@@ -207,5 +207,6 @@ export interface MultiAgentResult extends AnalysisResult {
   careerAdvice: CareerAdvice
   matchingJobs: Job[]
   agentsUsed: string[]
+  allUserSkills?: string[]
   timetable?: TimetableEntry[]
 }
