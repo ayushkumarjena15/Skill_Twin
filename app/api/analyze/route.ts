@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { analyzeWithOllama } from "@/lib/services/ollama"
+import { analyzeWithMultipleAgents } from "@/lib/services/agents"
 import type { StudentProfile } from "@/lib/types"
 
 export async function POST(request: NextRequest) {
@@ -22,8 +22,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Analyze with Ollama
-    const result = await analyzeWithOllama(profile)
+    console.log("📥 Analysis Request:", profile)
+
+    // Analyze with Multiple Agents
+    const result = await analyzeWithMultipleAgents(profile)
+
+    console.log("📤 Analysis Complete!")
 
     return NextResponse.json(result)
 
@@ -31,7 +35,7 @@ export async function POST(request: NextRequest) {
     console.error("Analysis error:", error)
     
     return NextResponse.json(
-      { error: "Analysis failed. Is Ollama running?" },
+      { error: "Analysis failed. Check if Ollama is running." },
       { status: 500 }
     )
   }

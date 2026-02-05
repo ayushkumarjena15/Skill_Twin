@@ -140,7 +140,7 @@ export function ResultsDashboard({ result, profile }: ResultsDashboardProps) {
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Github className="h-4 w-4" />
-                    GitHub Portfolio
+                    GitHub Engagement (commits, activity, repos etc.)
                   </div>
                   <Progress value={result.githubScore} className="h-2" />
                   <span className="text-sm font-medium">{result.githubScore}%</span>
@@ -234,7 +234,7 @@ export function ResultsDashboard({ result, profile }: ResultsDashboardProps) {
         <Card className="border-border/50 bg-card/50 backdrop-blur">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <CheckCircle2 className="h-5 w-5 text-accent" />
+              <CheckCircle2 className="h-5 w-5 text-emerald-500" />
               Matched Skills
               <Badge variant="secondary" className="ml-auto">
                 {result.matchedSkills.length}
@@ -246,7 +246,7 @@ export function ResultsDashboard({ result, profile }: ResultsDashboardProps) {
             <div className="flex flex-wrap gap-2">
               {result.matchedSkills.length > 0 ? (
                 result.matchedSkills.map((skill) => (
-                  <Badge key={skill} className="bg-accent/20 text-accent border-accent/30">
+                  <Badge key={skill} className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                     {skill}
                   </Badge>
                 ))
