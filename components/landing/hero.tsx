@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Bot, TrendingUp, GitBranch } from "lucide-react"
 import Link from "next/link"
+import { SpotlightCard } from "@/components/ui/spotlight-card"
 
 
 function Counter({ value, suffix = "" }: { value: string, suffix?: string }) {
@@ -32,13 +33,17 @@ function Counter({ value, suffix = "" }: { value: string, suffix?: string }) {
     }
   }, [isInView, target])
 
-  return <span ref={ref}>{isNaN(target) ? value : `${count}${suffix}`}</span>
+  return (
+    <>
+      <span className="sr-only">{value}{suffix}</span>
+      <span aria-hidden="true" ref={ref}>{isNaN(target) ? value : `${count}${suffix}`}</span>
+    </>
+  )
 }
 
 export function Hero() {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-24">
-
       <div className="container px-4 mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -70,51 +75,6 @@ export function Hero() {
 
           {/* Headline with Animated Background Lines */}
           <div className="relative">
-            {/* Multiple Animated Moving Lines */}
-            <div className="absolute inset-0 -z-10 overflow-hidden">
-              {/* Line 1 - Horizontal */}
-              <motion.div
-                className="absolute top-1/4 h-[2px] w-full bg-gradient-to-r from-transparent via-primary to-transparent dark:via-primary/60"
-                animate={{
-                  x: ["-100%", "100%"],
-                  opacity: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              />
-              {/* Line 2 - Horizontal (opposite direction) */}
-              <motion.div
-                className="absolute top-1/2 h-[2px] w-full bg-gradient-to-r from-transparent via-purple-600 to-transparent dark:via-purple-500/50"
-                animate={{
-                  x: ["100%", "-100%"],
-                  opacity: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay: 1,
-                }}
-              />
-              {/* Line 3 - Horizontal */}
-              <motion.div
-                className="absolute top-3/4 h-[2px] w-full bg-gradient-to-r from-transparent via-primary/80 to-transparent dark:via-primary/40"
-                animate={{
-                  x: ["-100%", "100%"],
-                  opacity: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration: 3.5,
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay: 0.5,
-                }}
-              />
-            </div>
-
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -205,47 +165,35 @@ export function Hero() {
             className="grid grid-cols-3 gap-8 mt-16 pt-10 border-t border-border/50"
           >
             {[
-              { value: "4", suffix: "+", label: "AI Agents", icon: "🤖", color: "text-blue-500", bgColor: "bg-blue-500/10" },
-              { value: "Live", suffix: "", label: "Job Data", icon: "📊", color: "text-green-500", bgColor: "bg-green-500/10" },
-              { value: "Real", suffix: "", label: "GitHub Analysis", icon: "💻", color: "text-primary", bgColor: "bg-primary/10" },
+              { value: "4", suffix: "+", label: "AI Agents", icon: <Bot className="w-8 h-8 text-blue-400" />, color: "text-blue-400", bgColor: "bg-blue-500/10", spotlight: "rgba(59, 130, 246, 0.25)" },
+              { value: "Live", suffix: "", label: "Job Data", icon: <TrendingUp className="w-8 h-8 text-emerald-400" />, color: "text-emerald-400", bgColor: "bg-emerald-500/10", spotlight: "rgba(16, 185, 129, 0.25)" },
+              { value: "Real", suffix: "", label: "GitHub Analysis", icon: <GitBranch className="w-8 h-8 text-purple-400" />, color: "text-purple-400", bgColor: "bg-purple-500/10", spotlight: "rgba(168, 85, 247, 0.25)" },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                whileHover={{
-                  scale: 1.08,
-                  y: -10,
-                  zIndex: 10,
-                  transition: { type: "spring", stiffness: 300, damping: 20 }
-                }}
-                transition={{ duration: 0.3, delay: 0.7 + index * 0.1 }}
-                className="relative z-0"
+                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
               >
-                <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900 shadow-lg text-center transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/30 cursor-pointer">
+                <SpotlightCard
+                  spotlightColor={stat.spotlight}
+                  className="p-6 h-full flex flex-col items-center justify-center text-center cursor-default"
+                >
                   {/* Icon */}
-                  <motion.div
-                    className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center mx-auto mb-4`}
-                    whileHover={{ rotate: 12, scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  >
-                    <span className="text-2xl">{stat.icon}</span>
-                  </motion.div>
+                  <div className={`w-16 h-16 rounded-2xl ${stat.bgColor} flex items-center justify-center mb-4 ring-1 ring-white/10 shadow-lg`}>
+                    {stat.icon}
+                  </div>
 
                   {/* Value */}
-                  <motion.div
-                    className={`text-3xl sm:text-4xl font-bold ${stat.color} mb-1`}
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  >
+                  <div className={`text-4xl font-bold ${stat.color} mb-2 drop-shadow-sm`}>
                     <Counter value={stat.value} suffix={stat.suffix} />
-                  </motion.div>
+                  </div>
 
                   {/* Label */}
-                  <div className="text-sm text-zinc-400">
+                  <div className="text-sm font-medium text-zinc-400">
                     {stat.label}
                   </div>
-                </div>
+                </SpotlightCard>
               </motion.div>
             ))}
           </motion.div>

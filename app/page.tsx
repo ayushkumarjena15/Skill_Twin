@@ -22,7 +22,7 @@ export default function Home() {
   // and users can actually see the landing page while logged in.
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       <Navbar />
       <Hero />
       <SectionDivider />

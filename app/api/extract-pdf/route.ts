@@ -15,6 +15,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only PDF files allowed" }, { status: 400 })
     }
 
+    if (file.type !== "application/pdf") {
+      return NextResponse.json({ error: "Invalid file type. Must be application/pdf" }, { status: 400 })
+    }
+
     // Convert file to Buffer
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
@@ -27,7 +31,7 @@ export async function POST(request: NextRequest) {
     } catch (parseError) {
       console.error("PDF Parse Error:", parseError)
       return NextResponse.json(
-        { error: "Failed to read PDF content" }, 
+        { error: "Failed to read PDF content" },
         { status: 500 }
       )
     }
@@ -37,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     if (text.length < 50) {
       return NextResponse.json(
-        { error: "No readable text found in PDF (might be an image)" }, 
+        { error: "No readable text found in PDF (might be an image)" },
         { status: 400 }
       )
     }

@@ -26,7 +26,7 @@ const teamMembers = [
     {
         name: "Mr. Ankit Naik",
         role: "ML Developer",
-        image: "/team/team-member-2.jpg",
+        image: "/team/ankit-naik.jpg",
         bio: "Specializes in building intelligent machine learning models, data-driven solutions, and AI systems aligned with real-world industry needs.",
         socials: {
             linkedin: "https://www.linkedin.com/in/ankit-naik-387092321?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",

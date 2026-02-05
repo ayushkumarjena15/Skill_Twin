@@ -1,14 +1,22 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
-import "@/app/globals.css" // Ensure this path is correct, might need to be just "./globals.css" if moved back
+import "@/app/globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space",
+})
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+})
 
 export const metadata: Metadata = {
-  title: "SkillTwin - Bridge the Gap Between Education & Employment",
-  description: "AI-powered skill gap analyzer that creates personalized bridge-course roadmaps for students.",
+  title: "SkillTwin",
+  description: "AI-powered skill analysis and roadmap generator",
 }
 
 export default function RootLayout({
@@ -18,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${jakarta.className} ${spaceGrotesk.variable} ${jakarta.variable}`}>
         <AuthProvider>
           <ThemeProvider
             attribute="class"
