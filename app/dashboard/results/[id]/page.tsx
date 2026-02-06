@@ -17,6 +17,7 @@ import { StreakCounter } from "@/components/streak-counter"
 import { ProgressTracker } from "@/components/progress-tracker"
 import { InterviewPrep } from "@/components/interview-prep"
 import { ResumeTailor } from "@/components/resume-tailor"
+import { SyllabusAnalysis } from "@/components/syllabus-analysis"
 import { getAnalysisById } from "@/lib/db"
 import type { StudentProfile, MultiAgentResult } from "@/lib/types"
 
@@ -31,7 +32,8 @@ import {
     ClipboardList,
     Loader2,
     AlertCircle,
-    History
+    History,
+    School
 } from "lucide-react"
 import Link from "next/link"
 
@@ -54,7 +56,7 @@ function ResultsContent({ params }: ResultsPageProps) {
     const [result, setResult] = useState<MultiAgentResult | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState<"results" | "roadmap" | "jobs" | "advice" | "progress" | "interview" | "resume">("results")
+    const [activeTab, setActiveTab] = useState<"results" | "syllabus" | "roadmap" | "jobs" | "advice" | "progress" | "interview" | "resume">("results")
 
     useEffect(() => {
         if (user && resolvedParams.id) {
@@ -218,6 +220,15 @@ function ResultsContent({ params }: ResultsPageProps) {
                                 Results
                             </Button>
                             <Button
+                                variant={activeTab === "syllabus" ? "default" : "ghost"}
+                                size="sm"
+                                onClick={() => setActiveTab("syllabus")}
+                                className="transition-all"
+                            >
+                                <School className="h-4 w-4 mr-2" />
+                                Syllabus Check
+                            </Button>
+                            <Button
                                 variant={activeTab === "roadmap" ? "default" : "ghost"}
                                 size="sm"
                                 onClick={() => setActiveTab("roadmap")}
@@ -282,6 +293,13 @@ function ResultsContent({ params }: ResultsPageProps) {
                         >
                             {activeTab === "results" && (
                                 <ResultsDashboard result={result} profile={profile} />
+                            )}
+
+                            {activeTab === "syllabus" && (
+                                <SyllabusAnalysis
+                                    jobRole={profile.jobRole}
+                                    initialSyllabusTopics={profile.syllabusTopics}
+                                />
                             )}
 
                             {activeTab === "roadmap" && (
