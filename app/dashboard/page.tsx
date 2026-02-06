@@ -17,8 +17,11 @@ import { Badge } from "@/components/ui/badge"
 import { saveAnalysis } from "@/lib/db"
 import type { StudentProfile, MultiAgentResult } from "@/lib/types"
 import { BackButton } from "@/components/ui/back-button"
+import { ProgressTracker } from "@/components/progress-tracker"
+import { InterviewPrep } from "@/components/interview-prep"
+import { ResumeTailor } from "@/components/resume-tailor"
+
 import {
-  Sparkles,
   ArrowLeft,
   Target,
   BookOpen,
@@ -32,7 +35,8 @@ import {
   Search,
   Route,
   History,
-  CheckCircle
+  CheckCircle,
+  ClipboardList
 } from "lucide-react"
 import Link from "next/link"
 
@@ -59,7 +63,7 @@ function DashboardContent() {
   const [result, setResult] = useState<MultiAgentResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  const [activeTab, setActiveTab] = useState<"results" | "roadmap" | "jobs" | "advice">("results")
+  const [activeTab, setActiveTab] = useState<"results" | "roadmap" | "jobs" | "advice" | "progress" | "interview" | "resume">("results")
   const [saved, setSaved] = useState(false)
 
   const handleSubmit = async (studentProfile: StudentProfile) => {
@@ -141,51 +145,13 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+      {/* Background - Luminous Void Grid */}
+      <div className="absolute inset-0 bg-zinc-950 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] opacity-20" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
-      {/* Animated Moving Lines */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-1/4 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent"
-          animate={{ x: ["-100%", "100%"] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="absolute top-1/2 h-[1px] w-full bg-gradient-to-r from-transparent via-purple-500/10 to-transparent"
-          animate={{ x: ["100%", "-100%"] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 2 }}
-        />
-        <motion.div
-          className="absolute top-3/4 h-[1px] w-full bg-gradient-to-r from-transparent via-primary/10 to-transparent"
-          animate={{ x: ["-100%", "100%"] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "linear", delay: 5 }}
-        />
-      </div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 rounded-full bg-primary/20"
-            style={{
-              left: `${10 + i * 12}%`,
-              top: `${15 + (i % 4) * 20}%`,
-            }}
-            animate={{
-              y: [0, -40, 0],
-              opacity: [0.2, 0.5, 0.2],
-            }}
-            transition={{
-              duration: 4 + i * 0.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.4,
-            }}
-          />
-        ))}
-      </div>
+      {/* Subtle Ambient Glows */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl pointer-events-none mix-blend-screen animate-pulse duration-[10s]" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none mix-blend-screen animate-pulse duration-[15s]" />
 
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/60 backdrop-blur-xl transition-all duration-300">
@@ -245,7 +211,7 @@ function DashboardContent() {
 
       <main className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-2xl mx-auto mb-6 flex justify-start">
-          <BackButton href="/" />
+          <BackButton />
         </div>
 
         {/* Loading State */}
@@ -384,6 +350,33 @@ function DashboardContent() {
                 <Brain className="h-4 w-4 mr-2" />
                 Career Advice
               </Button>
+              <Button
+                variant={activeTab === "progress" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setActiveTab("progress")}
+                className="transition-all"
+              >
+                <ClipboardList className="h-4 w-4 mr-2" />
+                Track Progress
+              </Button>
+              <Button
+                variant={activeTab === "interview" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setActiveTab("interview")}
+                className="transition-all"
+              >
+                <Bot className="h-4 w-4 mr-2" />
+                Interview Prep
+              </Button>
+              <Button
+                variant={activeTab === "resume" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setActiveTab("resume")}
+                className="transition-all"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Resume Optimizer
+              </Button>
             </div>
 
             {/* Content */}
@@ -398,7 +391,11 @@ function DashboardContent() {
               )}
 
               {activeTab === "roadmap" && (
-                <LearningRoadmap result={result} />
+                <LearningRoadmap
+                  result={result}
+                  userId={user?.id}
+                  jobRole={profile?.jobRole}
+                />
               )}
 
               {activeTab === "jobs" && (
@@ -408,8 +405,20 @@ function DashboardContent() {
                 />
               )}
 
-              {activeTab === "advice" && (
+              {activeTab === "advice" && result.careerAdvice && (
                 <CareerAdviceCard advice={result.careerAdvice} />
+              )}
+
+              {activeTab === "progress" && (
+                <ProgressTracker result={result} />
+              )}
+
+              {activeTab === "interview" && profile && (
+                <InterviewPrep jobRole={profile.jobRole} skillGaps={result.missingSkills} />
+              )}
+
+              {activeTab === "resume" && (
+                <ResumeTailor />
               )}
             </motion.div>
           </motion.div>

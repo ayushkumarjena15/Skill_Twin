@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 export function CTA() {
@@ -45,7 +45,7 @@ export function CTA() {
               transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
               className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm mb-8"
             >
-              <Sparkles className="h-8 w-8 text-white" />
+              <img src="/logo.png" alt="SkillTwin Logo" className="w-10 h-10 object-contain" />
             </motion.div>
 
             {/* Headline */}

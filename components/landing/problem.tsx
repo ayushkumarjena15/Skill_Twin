@@ -146,22 +146,12 @@ export function Problem() {
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{
-                  scale: 1.1,
-                  y: -5,
-                  transition: { type: "spring", stiffness: 300, damping: 20 }
-                }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
-                className="cursor-pointer"
               >
-                <motion.div
-                  className="text-4xl font-bold text-destructive mb-2"
-                  whileHover={{ scale: 1.15, textShadow: "0 0 20px rgba(239, 68, 68, 0.6)" }}
-                  transition={{ type: "spring", stiffness: 400 }}
-                >
+                <div className="text-4xl font-bold text-destructive mb-2">
                   <Counter value={stat.value} suffix={stat.suffix} />
-                </motion.div>
+                </div>
                 <div className="text-sm text-zinc-400">{stat.label}</div>
               </motion.div>
             ))}

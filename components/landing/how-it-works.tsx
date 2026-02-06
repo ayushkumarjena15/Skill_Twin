@@ -198,7 +198,7 @@ export function HowItWorks() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-16 text-center"
         >
-          <p className="text-sm text-zinc-500 mb-4">Powered by Multiple AI Agents</p>
+          <p className="text-sm text-zinc-500 mb-4">Powered by Multi AI Agent</p>
           <div className="flex flex-wrap justify-center gap-3">
             <div className="px-4 py-2 rounded-full border border-zinc-800 bg-zinc-900 text-sm text-white">
               🦙 Ollama

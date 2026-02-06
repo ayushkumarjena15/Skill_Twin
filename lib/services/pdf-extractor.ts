@@ -55,7 +55,7 @@ function parseJSON(text: string): Record<string, unknown> | null {
     let cleaned = text.trim()
     const start = cleaned.indexOf("{")
     const end = cleaned.lastIndexOf("}") + 1
-    
+
     if (start !== -1 && end > start) {
       cleaned = cleaned.slice(start, end)
       cleaned = cleaned
@@ -63,7 +63,7 @@ function parseJSON(text: string): Record<string, unknown> | null {
         .replace(/,\s*]/g, "]")
         .replace(/'/g, '"')
         .replace(/\n/g, " ")
-      
+
       return JSON.parse(cleaned)
     }
   } catch (error) {
@@ -73,20 +73,43 @@ function parseJSON(text: string): Record<string, unknown> | null {
 }
 
 // Quick skill extraction using pattern matching
+// Escape special characters for regex
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// Quick skill extraction using pattern matching
 function quickSkillExtract(text: string): string[] {
-  const textLower = text.toLowerCase()
   const foundSkills: string[] = []
-  
+
   for (const skill of COMMON_SKILLS) {
-    if (textLower.includes(skill.toLowerCase())) {
-      // Capitalize first letter of each word
-      const formatted = skill.split(" ").map(word => 
+    // Check if skill is purely alphanumeric (plus hyphens/underscores allowed in words)
+    // This covers "Java", "Python", "Go", "R", "React", "Terraform" etc.
+    const isWord = /^[a-zA-Z0-9_\-]+$/.test(skill)
+
+    let matched = false
+
+    if (isWord) {
+      // Use word boundaries for standard words to avoid partial matches
+      // e.g. "Go" won't match "Good", "R" won't match "React"
+      const regex = new RegExp(`\\b${escapeRegExp(skill)}\\b`, 'i')
+      matched = regex.test(text)
+    } else {
+      // For skills with special chars (C++, C#, .NET, Node.js), fall back to simple inclusion
+      // or custom boundary logic could be added here if needed.
+      matched = text.toLowerCase().includes(skill.toLowerCase())
+    }
+
+    if (matched) {
+      // Capitalize first letter of each word for display
+      // Special handlings can be added here if needed
+      const formatted = skill.split(" ").map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
       ).join(" ")
       foundSkills.push(formatted)
     }
   }
-  
+
   return [...new Set(foundSkills)]
 }
 
@@ -100,7 +123,7 @@ export async function extractSkillsWithAI(text: string): Promise<{
 }> {
   // First, do quick pattern matching
   const quickSkills = quickSkillExtract(text)
-  
+
   // Then use AI for deeper extraction
   const prompt = `
 You are an expert resume and syllabus parser. Extract information from this text.
@@ -129,17 +152,17 @@ JSON:`
   try {
     const response = await chatWithOllama(prompt)
     const parsed = parseJSON(response)
-    
+
     if (parsed) {
       const aiSkills = (parsed.skills as string[]) || []
       const topics = (parsed.topics as string[]) || []
       const projects = (parsed.projects as string[]) || []
       const education = (parsed.education as string) || ""
       const experience = (parsed.experience as string) || ""
-      
+
       // Combine AI skills with quick pattern matching
       const allSkills = [...new Set([...aiSkills, ...quickSkills])]
-      
+
       return {
         skills: allSkills,
         topics,
@@ -151,7 +174,7 @@ JSON:`
   } catch (error) {
     console.error("AI extraction failed:", error)
   }
-  
+
   // Fallback to quick extraction only
   return {
     skills: quickSkills,
@@ -165,21 +188,21 @@ JSON:`
 // Detect document type
 export function detectDocumentType(text: string): "resume" | "syllabus" | "unknown" {
   const textLower = text.toLowerCase()
-  
+
   const resumeKeywords = ["experience", "employment", "work history", "objective", "summary", "skills", "education", "references", "contact"]
   const syllabusKeywords = ["course", "semester", "credits", "syllabus", "curriculum", "module", "unit", "chapter", "lecture", "examination"]
-  
+
   let resumeScore = 0
   let syllabusScore = 0
-  
+
   for (const keyword of resumeKeywords) {
     if (textLower.includes(keyword)) resumeScore++
   }
-  
+
   for (const keyword of syllabusKeywords) {
     if (textLower.includes(keyword)) syllabusScore++
   }
-  
+
   if (resumeScore > syllabusScore) return "resume"
   if (syllabusScore > resumeScore) return "syllabus"
   return "unknown"

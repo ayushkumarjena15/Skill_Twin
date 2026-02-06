@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-jakarta);
-  --font-heading: var(--font-space);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-mono);
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -106,30 +106,42 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    /* Zinc Scale for "Luminous Void" */
+    --background: 240 10% 3.5%; /* Zinc 950 */
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    
+    --card: 240 7% 7%; /* Zinc 900+ */
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    
+    --popover: 240 10% 3.5%;
     --popover-foreground: 0 0% 98%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 3.7% 15.9%;
+    
+    /* Electric Violet for Primary/AI */
+    --primary: 255 90% 75%; /* Brighter Violet */
+    --primary-foreground: 265 89% 5%;
+    
+    --secondary: 240 4% 16%; /* Zinc 800 */
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%; /* Zinc 400 */
+    
+    --accent: 240 4% 16%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 262 83% 58%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    
+    --border: 240 4% 16%; /* Zinc 800 */
+    --input: 240 4% 16%;
+    --ring: 255 90% 75%;
+    
+    /* Chart Colors - Neon Pastels defined in requirements */
+    --chart-1: 250 100% 75%; /* Indigo/Violet */
+    --chart-2: 160 84% 39%; /* Emerald */
+    --chart-3: 45 93% 47%; /* Amber/Gold */
+    --chart-4: 340 82% 52%; /* Rose/Red */
+    --chart-5: 199 89% 48%; /* Blue */
   }
 }
 
@@ -173,4 +185,20 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
+}
+/* Gradient Animation */
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+.animate-gradient-reverse {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite reverse;
 }

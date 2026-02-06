@@ -6,7 +6,7 @@ import { Footer } from "@/components/landing/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { BackButton } from "@/components/ui/back-button"
-import { ArrowRight, Target, Lightbulb, Users, Sparkles, Rocket } from "lucide-react"
+import { ArrowRight, Target, Lightbulb, Users, Rocket } from "lucide-react"
 
 export default function AboutPage() {
     return (
@@ -29,7 +29,7 @@ export default function AboutPage() {
                         className="text-center max-w-4xl mx-auto mb-16"
                     >
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
-                            <Sparkles className="h-4 w-4" />
+                            <Rocket className="h-4 w-4" />
                             <span className="text-sm font-medium">Our Story</span>
                         </div>
 
@@ -111,7 +111,7 @@ export default function AboutPage() {
                                 desc: "We leverage cutting-edge AI (Ollama, Groq, Gemini) to solve age-old education problems."
                             },
                             {
-                                icon: Sparkles,
+                                icon: Lightbulb,
                                 title: "Quality",
                                 desc: "We don't just aggregate content; we curate high-quality learning paths for real impact."
                             }

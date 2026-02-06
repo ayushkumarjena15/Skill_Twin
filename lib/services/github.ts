@@ -1,3 +1,5 @@
+import { GitHubData } from "@/lib/types"
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ""
 
 interface GitHubRepo {
@@ -7,35 +9,41 @@ interface GitHubRepo {
   topics: string[]
   fork: boolean
   updated_at: string
+  description: string | null
+  html_url: string
 }
 
 interface GitHubUser {
+  login: string
   public_repos: number
   followers: number
   following: number
   created_at: string
+  avatar_url: string
+  bio: string | null
+  html_url: string
 }
 
-export interface GitHubAnalysis {
-  score: number
-  languages: string[]
-  totalRepos: number
-  totalStars: number
-  topRepos: string[]
-  skills: string[]
-  error?: string
-}
+export async function analyzeGitHub(username?: string): Promise<GitHubData> {
+  // Default empty state
+  const emptyData: GitHubData = {
+    username: username || "",
+    totalRepos: 0,
+    totalStars: 0,
+    totalForks: 0,
+    languages: [],
+    skills: [],
+    topRepos: [],
+    score: 0,
+    followers: 0,
+    following: 0,
+    avatarUrl: "",
+    bio: "",
+    profileUrl: ""
+  }
 
-export async function analyzeGitHub(username: string): Promise<GitHubAnalysis> {
   if (!username) {
-    return {
-      score: 0,
-      languages: [],
-      totalRepos: 0,
-      totalStars: 0,
-      topRepos: [],
-      skills: []
-    }
+    return emptyData
   }
 
   try {
@@ -49,9 +57,10 @@ export async function analyzeGitHub(username: string): Promise<GitHubAnalysis> {
 
     // Fetch user profile
     const userRes = await fetch(`https://api.github.com/users/${username}`, { headers })
-    
+
     if (!userRes.ok) {
-      throw new Error(`User not found: ${username}`)
+      console.warn(`GitHub user not found: ${username}`)
+      return emptyData
     }
 
     const user: GitHubUser = await userRes.json()
@@ -68,10 +77,10 @@ export async function analyzeGitHub(username: string): Promise<GitHubAnalysis> {
 
     const repos: GitHubRepo[] = await reposRes.json()
 
-    // Filter out forks
+    // Filter out forks for stats (optional, but good for "own" work)
     const ownRepos = repos.filter(repo => !repo.fork)
 
-    // Extract languages
+    // Extract languages and stars
     const languageCount: Record<string, number> = {}
     let totalStars = 0
 
@@ -92,11 +101,17 @@ export async function analyzeGitHub(username: string): Promise<GitHubAnalysis> {
     const topRepos = ownRepos
       .sort((a, b) => b.stargazers_count - a.stargazers_count)
       .slice(0, 5)
-      .map(repo => repo.name)
+      .map(repo => ({
+        name: repo.name,
+        description: repo.description || "",
+        stars: repo.stargazers_count,
+        language: repo.language || "Unknown",
+        url: repo.html_url
+      }))
 
     // Extract skills from topics
     const allTopics = ownRepos.flatMap(repo => repo.topics || [])
-    const uniqueSkills = [...new Set(allTopics)].slice(0, 10)
+    const uniqueSkills = [...new Set(allTopics)].slice(0, 15)
 
     // Calculate score (0-100)
     const score = calculateGitHubScore({
@@ -108,25 +123,24 @@ export async function analyzeGitHub(username: string): Promise<GitHubAnalysis> {
     })
 
     return {
-      score,
-      languages,
+      username: user.login,
+      avatarUrl: user.avatar_url,
+      followers: user.followers,
+      following: user.following,
+      bio: user.bio || "",
+      profileUrl: user.html_url,
       totalRepos: ownRepos.length,
       totalStars,
+      totalForks: 0, // Not calculating recursively to save API calls
+      languages,
+      skills: [...languages, ...uniqueSkills],
       topRepos,
-      skills: [...languages, ...uniqueSkills]
+      score
     }
 
   } catch (error) {
     console.error("GitHub API error:", error)
-    return {
-      score: 0,
-      languages: [],
-      totalRepos: 0,
-      totalStars: 0,
-      topRepos: [],
-      skills: [],
-      error: error instanceof Error ? error.message : "Unknown error"
-    }
+    return emptyData
   }
 }
 

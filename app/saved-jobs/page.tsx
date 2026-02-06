@@ -13,7 +13,6 @@ import { getSavedJobs, removeSavedJob } from "@/lib/db"
 import type { SavedJob } from "@/lib/supabase"
 import { BackButton } from "@/components/ui/back-button"
 import {
-  Sparkles,
   ArrowLeft,
   Loader2,
   Trash2,
@@ -23,7 +22,8 @@ import {
   ExternalLink,
   Building,
   AlertCircle,
-  Clock
+  Clock,
+  Briefcase
 } from "lucide-react"
 import Link from "next/link"
 
@@ -97,14 +97,14 @@ function SavedJobsContent() {
           <div className="flex items-center justify-between h-16">
             <Link href="/dashboard" className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-primary" />
+                <Briefcase className="h-5 w-5 text-primary" />
               </div>
               <span className="font-bold text-xl">SkillTwin</span>
             </Link>
 
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <BackButton label="Dashboard" href="/dashboard" />
+              <BackButton />
               <UserNav />
             </div>
           </div>

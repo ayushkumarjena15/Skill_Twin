@@ -10,7 +10,6 @@ import {
   Building,
   DollarSign,
   MessageCircle,
-  Sparkles,
   Zap,
   Globe,
   Briefcase,
@@ -59,7 +58,7 @@ export function CareerAdviceCard({ advice }: CareerAdviceProps) {
           <CardHeader className="relative">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 rounded-lg bg-primary/20 text-primary">
-                <Sparkles className="h-6 w-6" />
+                <Lightbulb className="h-6 w-6" />
               </div>
               <CardTitle className="text-2xl font-bold tracking-tight">Career Strategy & Outlook</CardTitle>
             </div>
@@ -249,7 +248,7 @@ export function CareerAdviceCard({ advice }: CareerAdviceProps) {
                 "{advice.motivationalMessage}"
               </p>
               <div className="mt-6">
-                <Sparkles className="h-5 w-5 text-emerald-500 animate-pulse inline-block" />
+                {/* Icon removed */}
               </div>
             </CardContent>
           </Card>

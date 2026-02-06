@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-provider"
 import { motion } from "framer-motion"
-import { Sparkles, Quote, Loader2 } from "lucide-react"
+import { Quote, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -85,7 +85,6 @@ export default function AuthLayout({
               <blockquote className="space-y-8">
                 <motion.p
                   className="text-2xl font-light leading-relaxed tracking-wide"
-                  style={{ fontFamily: "'Georgia', serif" }}
                 >
                   {["SkillTwin", "bridges", "the", "gap", "between", "academic", "learning", "and", "industry", "expectations", "by", "delivering", "clear", "skill", "insights", "and", "personalized", "career", "roadmaps."].map((word, index) => (
                     <motion.span

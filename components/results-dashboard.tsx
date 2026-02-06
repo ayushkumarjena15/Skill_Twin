@@ -1,21 +1,24 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { SpotlightCard } from "@/components/ui/spotlight-card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { CompositionChart } from "@/components/dashboard/composition-chart"
 import { SkillRadialChart } from "@/components/dashboard/radial-chart"
 import { ScoreRing } from "@/components/dashboard/score-ring"
-import { 
-  CheckCircle, 
-  XCircle, 
-  TrendingUp, 
-  Award, 
-  Github, 
+import {
+  CheckCircle2,
+  TrendingUp,
+  Github,
   GraduationCap,
   Briefcase,
   AlertTriangle,
-  Code
+  Cpu,
+  Layers,
+  Zap,
+  Award
 } from "lucide-react"
 import type { StudentProfile, MultiAgentResult } from "@/lib/types"
 
@@ -25,12 +28,12 @@ interface ResultsDashboardProps {
 }
 
 export function ResultsDashboard({ result, profile }: ResultsDashboardProps) {
-  // Prepare data for Radial Chart
+  // Prepare data for Radial Chart with new Neon Palette
   const radialData = [
-    { name: 'Core Tech', score: result.coreSkillsMatch || 0, fill: '#6366f1' }, // Indigo
-    { name: 'Bonus Skills', score: result.bonusSkillsMatch || 0, fill: '#8b5cf6' }, // Violet
-    { name: 'Academics', score: result.cgpaScore || 0, fill: '#eab308' }, // Yellow
-    { name: 'Portfolio', score: result.githubScore || 0, fill: '#10b981' }, // Emerald
+    { name: 'Core Tech', score: result.coreSkillsMatch || 0, fill: 'var(--chart-1)' }, // Indigo/Violet
+    { name: 'Bonus Skills', score: result.bonusSkillsMatch || 0, fill: 'var(--chart-5)' }, // Blue
+    { name: 'Academics', score: result.cgpaScore || 0, fill: 'var(--chart-3)' }, // Amber
+    { name: 'Portfolio', score: result.githubScore || 0, fill: 'var(--chart-2)' }, // Emerald
   ]
 
   const container = {
@@ -41,222 +44,342 @@ export function ResultsDashboard({ result, profile }: ResultsDashboardProps) {
     }
   }
 
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+  const itemVariant = {
+    hidden: { opacity: 0, y: 15 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring" as const, stiffness: 50 }
+    }
   }
 
+
   return (
-    <motion.div 
+    <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6"
+      className="grid grid-cols-1 md:grid-cols-12 gap-5"
     >
-      {/* Top Row: Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        {/* Main Score Card */}
-        <motion.div variants={item} className="md:col-span-4">
-          <Card className="h-full border-l-4 border-l-primary shadow-sm hover:shadow-md transition-all">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                Employability Score
+      {/* 1. MAIN SCORE CARD (Bento: Large Square) */}
+      <motion.div variants={itemVariant} className="col-span-12 md:col-span-4 lg:col-span-4">
+        <SpotlightCard spotlightColor="rgba(139, 92, 246, 0.2)" className="h-full group">
+          <div className="flex flex-col h-full bg-zinc-900/30 backdrop-blur-sm">
+            <CardHeader className="pb-2 relative z-10 border-b border-white/5">
+              <CardTitle className="text-xs font-semibold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                <Zap className="w-3 h-3 text-violet-400" />
+                Employability Pulse
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center py-6">
-              <ScoreRing score={result.employabilityScore} />
-              <div className="mt-4 text-center">
-                <h3 className="font-semibold text-lg text-foreground">
-                  {result.employabilityScore >= 80 ? "Industry Ready" : 
-                   result.employabilityScore >= 60 ? "Job Potential" : 
-                   "Needs Improvement"}
+            <CardContent className="flex-1 flex flex-col items-center justify-center py-8 relative z-10">
+              <div className="relative z-10 scale-110">
+                <ScoreRing score={result.employabilityScore} size={200} strokeWidth={8} />
+              </div>
+
+              <div className="text-center space-y-1 mt-8">
+                <h3 className="text-2xl font-bold text-white tracking-tight animate-in fade-in zoom-in duration-500">
+                  {result.employabilityScore >= 80 ? "Top 5% Candidate" :
+                    result.employabilityScore >= 60 ? "Strong Potential" :
+                      "Developing"}
                 </h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Based on {profile?.jobRole} requirements
+                <p className="text-xs text-zinc-500 font-mono">
+                  {profile?.jobRole} Track
                 </p>
               </div>
             </CardContent>
-          </Card>
-        </motion.div>
+          </div>
+        </SpotlightCard>
+      </motion.div>
 
-        {/* Radial Chart */}
-        <motion.div variants={item} className="md:col-span-8">
-          <Card className="h-full shadow-sm hover:shadow-md transition-all">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                Skill Composition Analysis
+      {/* 2. SKILL COMPOSITION (Bento: Wide Rect) */}
+      <motion.div variants={itemVariant} className="col-span-12 md:col-span-8 lg:col-span-5">
+        <SpotlightCard spotlightColor="rgba(59, 130, 246, 0.2)" className="h-full">
+          <div className="flex flex-col h-full bg-zinc-900/30 backdrop-blur-sm">
+            <CardHeader className="pb-2 border-b border-white/5">
+              <CardTitle className="text-xs font-semibold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                <Layers className="w-3 h-3 text-blue-400" />
+                Composition Matrix
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <SkillRadialChart data={radialData} />
+            <CardContent className="p-4 flex items-center justify-center flex-1 h-[340px] relative overflow-hidden">
+              {/* Grid Background Effect */}
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
+
+              <CompositionChart data={radialData} />
             </CardContent>
-          </Card>
+          </div>
+        </SpotlightCard>
+      </motion.div>
+
+      {/* 3. METRICS COLUMN (Bento: Stacked Small) */}
+      <div className="col-span-12 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-5">
+        {/* Core Skills */}
+        <motion.div variants={itemVariant}>
+          <SpotlightCard spotlightColor="rgba(99, 102, 241, 0.2)" className="hover:scale-[1.02] transition-transform duration-300">
+            <div className="bg-zinc-900/30 p-5">
+              <div className="flex justify-between items-start mb-3">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Core Match</span>
+                <Briefcase className="w-4 h-4 text-indigo-400" />
+              </div>
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-3xl font-mono font-bold text-white tracking-tighter">{result.coreSkillsMatch}%</span>
+              </div>
+              <Progress value={result.coreSkillsMatch} className="h-1.5 bg-zinc-800" indicatorClassName="bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+            </div>
+          </SpotlightCard>
+        </motion.div>
+
+        {/* Portfolio */}
+        <motion.div variants={itemVariant}>
+          <SpotlightCard spotlightColor="rgba(16, 185, 129, 0.2)" className="hover:scale-[1.02] transition-transform duration-300">
+            <div className="bg-zinc-900/30 p-5">
+              <div className="flex justify-between items-start mb-3">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Git Activity</span>
+                <Github className="w-4 h-4 text-emerald-400" />
+              </div>
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-3xl font-mono font-bold text-white tracking-tighter">{result.githubScore}</span>
+                <span className="text-xs text-zinc-600">pts</span>
+              </div>
+              <Progress value={result.githubScore} className="h-1.5 bg-zinc-800" indicatorClassName="bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+            </div>
+          </SpotlightCard>
+        </motion.div>
+
+        {/* Academics */}
+        <motion.div variants={itemVariant}>
+          <SpotlightCard spotlightColor="rgba(245, 158, 11, 0.2)" className="hover:scale-[1.02] transition-transform duration-300">
+            <div className="bg-zinc-900/30 p-5">
+              <div className="flex justify-between items-start mb-3">
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">GPA Weight</span>
+                <GraduationCap className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-3xl font-mono font-bold text-white tracking-tighter">{profile?.cgpa || 0}</span>
+                <span className="text-xs text-zinc-600">/ 10.0</span>
+              </div>
+              <Progress value={result.cgpaScore} className="h-1.5 bg-zinc-800" indicatorClassName="bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+            </div>
+          </SpotlightCard>
         </motion.div>
       </div>
 
-      {/* Middle Row: Detailed Breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Core Skills Metric */}
-        <motion.div variants={item}>
-          <Card className="shadow-sm hover:shadow-md transition-all">
-            <CardContent className="pt-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Core Skills</p>
-                  <h3 className="text-2xl font-bold mt-1">{result.coreSkillsMatch}%</h3>
-                </div>
-                <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
-                  <Briefcase className="h-5 w-5" />
-                </div>
-              </div>
-              <Progress value={result.coreSkillsMatch} className="h-2 bg-blue-100" />
-              <p className="text-xs text-muted-foreground mt-3">
-                {result.matchedSkills.length} matched core skills
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
+      {/* 4. GITHUB PROFILE SECTION (Full Width if available) */}
+      {result.githubData && result.githubData.username && (
+        <motion.div variants={itemVariant} className="col-span-12">
+          <SpotlightCard spotlightColor="rgba(255, 255, 255, 0.1)" className="overflow-hidden">
+            <div className="bg-zinc-900/30 p-6 sm:p-8">
+              <div className="flex flex-col md:flex-row gap-8 items-start">
 
-        {/* GitHub Metric */}
-        <motion.div variants={item}>
-          <Card className="shadow-sm hover:shadow-md transition-all">
-            <CardContent className="pt-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Portfolio Strength</p>
-                  <h3 className="text-2xl font-bold mt-1">{result.githubScore}/100</h3>
-                </div>
-                <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-600">
-                  <Github className="h-5 w-5" />
-                </div>
-              </div>
-              <Progress value={result.githubScore} className="h-2 bg-emerald-100" />
-              <p className="text-xs text-muted-foreground mt-3">
-                Based on repos, stars & languages
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Academic Metric */}
-        <motion.div variants={item}>
-          <Card className="shadow-sm hover:shadow-md transition-all">
-            <CardContent className="pt-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Academic Score</p>
-                  <h3 className="text-2xl font-bold mt-1">{profile?.cgpa || 0}/10</h3>
-                </div>
-                <div className="p-2 bg-yellow-500/10 rounded-lg text-yellow-600">
-                  <GraduationCap className="h-5 w-5" />
-                </div>
-              </div>
-              <Progress value={result.cgpaScore} className="h-2 bg-yellow-100" />
-              <p className="text-xs text-muted-foreground mt-3">
-                Weighted GPA contribution
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      {/* Bottom Row: Skills Lists (3 Boxes) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* 1. All User Skills */}
-        <motion.div variants={item}>
-          <Card className="h-full border-t-4 border-t-slate-500 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Code className="h-5 w-5 text-slate-500" />
-                Your Skillset
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {result.allUserSkills && result.allUserSkills.length > 0 ? (
-                  result.allUserSkills.map((skill, i) => (
-                    <Badge 
-                      key={i} 
-                      variant="secondary" 
-                      className="bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200 px-3 py-1"
-                    >
-                      {skill}
+                {/* Profile Info */}
+                <div className="flex flex-col items-center md:items-start gap-4 shrink-0">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-zinc-700 shadow-xl">
+                      {result.githubData.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={result.githubData.avatarUrl}
+                          alt={result.githubData.username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                          <Github className="w-10 h-10 text-zinc-500" />
+                        </div>
+                      )}
+                    </div>
+                    <Badge className="absolute -bottom-2 -right-2 bg-black border border-zinc-800 text-white">
+                      @{result.githubData.username}
                     </Badge>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">
-                    No skills found.
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                  </div>
 
-        {/* 2. Matched Skills */}
-        <motion.div variants={item}>
-          <Card className="h-full border-t-4 border-t-green-500 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-500" />
-                Matched Skills
+                  <div className="text-center md:text-left space-y-2 max-w-[200px]">
+                    {result.githubData.bio && (
+                      <p className="text-sm text-zinc-400 leading-relaxed line-clamp-3">
+                        {result.githubData.bio}
+                      </p>
+                    )}
+                    <a
+                      href={result.githubData.profileUrl || `https://github.com/${result.githubData.username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 hover:underline"
+                    >
+                      View Profile <TrendingUp className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Stats & Repos */}
+                <div className="flex-1 w-full space-y-6">
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-center">
+                      <div className="text-2xl font-bold text-white">{result.githubData.followers}</div>
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest">Followers</div>
+                    </div>
+                    <div className="bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-center">
+                      <div className="text-2xl font-bold text-white">{result.githubData.following}</div>
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest">Following</div>
+                    </div>
+                    <div className="bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-center">
+                      <div className="text-2xl font-bold text-white">{result.githubData.totalRepos}</div>
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest">Repositories</div>
+                    </div>
+                    <div className="bg-zinc-950/40 p-3 rounded-lg border border-zinc-800 text-center">
+                      <div className="text-2xl font-bold text-white">{result.githubData.totalStars}</div>
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest">Total Stars</div>
+                    </div>
+                  </div>
+
+                  {/* Top Repos */}
+                  {result.githubData.topRepos.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                        <Award className="w-3 h-3" /> Top Repositories
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {result.githubData.topRepos.slice(0, 4).map((repo) => (
+                          <a
+                            key={repo.name}
+                            href={repo.url || `https://github.com/${result.githubData?.username}/${repo.name}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block group/repo"
+                          >
+                            <div className="bg-zinc-900/50 hover:bg-zinc-800/50 border border-zinc-800 hover:border-zinc-700 p-3 rounded-lg transition-colors h-full">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="font-medium text-sm text-zinc-300 group-hover/repo:text-white truncate">
+                                  {repo.name}
+                                </span>
+                                <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+                                  {repo.language}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-zinc-500 line-clamp-1 mb-2">
+                                {repo.description || "No description provided"}
+                              </p>
+                              <div className="flex items-center gap-3 text-[10px] text-zinc-600">
+                                <span className="flex items-center gap-1">
+                                  <Award className="w-3 h-3 text-amber-500/70" /> {repo.stars}
+                                </span>
+                              </div>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </SpotlightCard>
+        </motion.div>
+      )}
+
+      {/* 5. SKILLS DECK (Bento: Two Halves) */}
+      <motion.div variants={itemVariant} className="col-span-12 md:col-span-6">
+        <SpotlightCard spotlightColor="rgba(16, 185, 129, 0.1)" className="h-full">
+          <div className="h-full bg-zinc-900/30 flex flex-col">
+            <CardHeader className="border-b border-white/5 pb-3">
+              <CardTitle className="text-xs font-semibold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+                <CheckCircle2 className="w-3 h-3" />
+                Matched Capabilities
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6 flex-1">
               <div className="flex flex-wrap gap-2">
                 {result.matchedSkills.length > 0 ? (
                   result.matchedSkills.map((skill, i) => (
-                    <Badge 
-                      key={i} 
-                      variant="secondary" 
-                      className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200 px-3 py-1"
+                    <motion.div
+                      key={skill}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: i * 0.05 }}
+                      whileHover={{ scale: 1.1, rotate: 1 }}
                     >
-                      {skill}
-                    </Badge>
+                      <Badge
+                        variant="secondary"
+                        className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20 px-3 py-1.5 rounded-md font-mono text-xs transition-colors cursor-default"
+                      >
+                        {skill}
+                      </Badge>
+                    </motion.div>
                   ))
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">
-                    No matching skills found for this role.
-                  </p>
+                  <p className="text-sm text-zinc-500 italic">No matches found yet.</p>
                 )}
               </div>
             </CardContent>
-          </Card>
-        </motion.div>
+          </div>
+        </SpotlightCard>
+      </motion.div>
 
-        {/* 3. Missing Skills */}
-        <motion.div variants={item}>
-          <Card className="h-full border-t-4 border-t-red-500 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-red-500" />
-                Skills to Acquire
+      <motion.div variants={itemVariant} className="col-span-12 md:col-span-6">
+        <SpotlightCard spotlightColor="rgba(244, 63, 94, 0.1)" className="h-full">
+          <div className="h-full bg-zinc-900/30 flex flex-col">
+            <CardHeader className="border-b border-white/5 pb-3">
+              <CardTitle className="text-xs font-semibold text-rose-400 uppercase tracking-widest flex items-center gap-2">
+                <AlertTriangle className="w-3 h-3" />
+                Critical Gaps
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6 flex-1">
               <div className="flex flex-wrap gap-2">
                 {result.missingSkills.length > 0 ? (
                   result.missingSkills.map((skill, i) => (
-                    <Badge 
-                      key={i} 
-                      variant="outline" 
-                      className="border-red-200 text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1"
+                    <motion.div
+                      key={skill}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: i * 0.05 }}
+                      whileHover={{ scale: 1.1, rotate: -1 }}
                     >
-                      {skill}
-                    </Badge>
+                      <Badge
+                        variant="outline"
+                        className="bg-rose-500/5 text-rose-400 border-rose-500/20 hover:bg-rose-500/10 px-3 py-1.5 rounded-md font-mono text-xs transition-colors cursor-default"
+                      >
+                        {skill}
+                      </Badge>
+                    </motion.div>
                   ))
                 ) : (
-                  <div className="flex items-center gap-2 text-green-600 bg-green-50 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 text-emerald-500 bg-emerald-500/10 p-4 rounded-lg border border-emerald-500/20">
                     <Award className="h-5 w-5" />
-                    <span className="text-sm font-medium">Great job! You have all required skills.</span>
+                    <span className="text-sm font-medium">All systems go. You have all required skills.</span>
                   </div>
                 )}
               </div>
             </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+          </div>
+        </SpotlightCard>
+      </motion.div>
+
+      {/* 5. USER SKILLSET (Bento: Full width footer) */}
+      <motion.div variants={itemVariant} className="col-span-12">
+        <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-950/20 p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-center gap-2 mb-4 opacity-50">
+            <Cpu className="w-3 h-3" />
+            <span className="text-[10px] font-mono tracking-widest uppercase">Detected Signature</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5 justify-center">
+            {result.allUserSkills && result.allUserSkills.map((skill, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.7 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.02 }}
+                whileHover={{ opacity: 1, scale: 1.1, textShadow: "0 0 8px rgba(255,255,255,0.5)" }}
+                className="px-2 py-1 rounded text-[10px] font-mono bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-crosshair transition-all"
+              >
+                {skill}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
     </motion.div>
   )
 }

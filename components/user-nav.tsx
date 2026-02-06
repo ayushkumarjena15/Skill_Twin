@@ -18,9 +18,10 @@ import {
   History,
   Bookmark,
   ChevronDown,
-  Sparkles
+  Brain
 } from "lucide-react"
 import Link from "next/link"
+import { StreakCounter } from "@/components/streak-counter"
 
 export function UserNav() {
   const { user, loading, signOut } = useAuth()
@@ -73,81 +74,84 @@ export function UserNav() {
   const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={name}
-              className="w-7 h-7 rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-medium text-primary">
-              {initials}
+    <div className="flex items-center gap-4">
+      <StreakCounter />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="gap-2">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={name}
+                className="w-7 h-7 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-medium text-primary">
+                {initials}
+              </div>
+            )}
+            <span className="hidden sm:inline-block max-w-[100px] truncate">
+              {name.split(" ")[0]}
+            </span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium">{name}</p>
+              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
             </div>
-          )}
-          <span className="hidden sm:inline-block max-w-[100px] truncate">
-            {name.split(" ")[0]}
-          </span>
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        </Button>
-      </DropdownMenuTrigger>
+          </DropdownMenuLabel>
 
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium">{name}</p>
-            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-          </div>
-        </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard" className="cursor-pointer">
+              <Brain className="mr-2 h-4 w-4" />
+              Skill Gap Analyzer
+            </Link>
+          </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="cursor-pointer">
-            <Sparkles className="mr-2 h-4 w-4 text-primary" />
-            Dashboard
-          </Link>
-        </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/profile" className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </Link>
+          </DropdownMenuItem>
 
-        <DropdownMenuItem asChild>
-          <Link href="/profile" className="cursor-pointer">
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </Link>
-        </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/history" className="cursor-pointer">
+              <History className="mr-2 h-4 w-4" />
+              Analysis History
+            </Link>
+          </DropdownMenuItem>
 
-        <DropdownMenuItem asChild>
-          <Link href="/history" className="cursor-pointer">
-            <History className="mr-2 h-4 w-4" />
-            Analysis History
-          </Link>
-        </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/saved-jobs" className="cursor-pointer">
+              <Bookmark className="mr-2 h-4 w-4" />
+              Saved Jobs
+            </Link>
+          </DropdownMenuItem>
 
-        <DropdownMenuItem asChild>
-          <Link href="/saved-jobs" className="cursor-pointer">
-            <Bookmark className="mr-2 h-4 w-4" />
-            Saved Jobs
-          </Link>
-        </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/profile" className="cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </Link>
+          </DropdownMenuItem>
 
-        <DropdownMenuItem asChild>
-          <Link href="/profile" className="cursor-pointer">
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </Link>
-        </DropdownMenuItem>
+          <DropdownMenuSeparator />
 
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem
-          onClick={handleSignOut}
-          className="cursor-pointer text-destructive focus:text-destructive"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Log out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <DropdownMenuItem
+            onClick={handleSignOut}
+            className="cursor-pointer text-destructive focus:text-destructive"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   )
 }

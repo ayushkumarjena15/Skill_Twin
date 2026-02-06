@@ -46,6 +46,18 @@ export async function signOut() {
   return await supabase.auth.signOut()
 }
 
+export async function resetPassword(email: string) {
+  return await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  })
+}
+
+export async function updatePassword(newPassword: string) {
+  return await supabase.auth.updateUser({
+    password: newPassword
+  })
+}
+
 export async function getCurrentUser() {
   return await supabase.auth.getUser()
 }
@@ -251,4 +263,35 @@ export async function deleteUserAccount(userId: string) {
   // NOTE: This only deletes data from the database.
   // Deleting the user from Supabase Auth requires a server-side route
   // with the service role key or usage of supabase.auth.admin.deleteUser()
+}
+
+// =============================================
+// ROADMAP FUNCTIONS
+// =============================================
+
+export async function updateUserRoadmap(userId: string, roadmap: any) {
+  // Update the latest analysis entry for this user with the new roadmap
+  // Or create a new entry if one doesn't exist (less likely for this flow)
+
+  // First, get the latest analysis ID
+  const { data: latestAnalysis } = await supabase
+    .from('analysis_history')
+    .select('id')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (latestAnalysis) {
+    return await supabase
+      .from('analysis_history')
+      .update({ roadmap: roadmap })
+      .eq('id', latestAnalysis.id)
+      .select()
+      .single();
+  } else {
+    // If no analysis exists, we can't update.
+    // In a real app we might create a new record or handle error.
+    throw new Error("No analysis history found to update roadmap");
+  }
 }

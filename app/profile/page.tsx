@@ -13,7 +13,6 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { getProfile, updateProfile, deleteUserAccount, uploadAvatar } from "@/lib/db"
 import { BackButton } from "@/components/ui/back-button"
 import {
-  Sparkles,
   User,
   Mail,
   Github,
@@ -37,6 +36,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import Link from "next/link"
+import { StreakCounter } from "@/components/streak-counter"
 
 export default function ProfilePage() {
   return (
@@ -236,8 +236,9 @@ function ProfileContent() {
             </Link>
 
             <div className="flex items-center gap-3">
+              <StreakCounter />
               <ThemeToggle />
-              <BackButton label="Dashboard" href="/dashboard" />
+              <BackButton />
             </div>
           </div>
         </div>

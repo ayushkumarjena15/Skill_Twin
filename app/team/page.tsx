@@ -6,6 +6,7 @@ import { Navbar } from "@/components/landing/navbar"
 import { Footer } from "@/components/landing/footer"
 import { Github, Twitter, Linkedin, Instagram, User, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 import { BackButton } from "@/components/ui/back-button"
@@ -70,8 +71,74 @@ export default function TeamPage() {
                         transition={{ duration: 0.6 }}
                         className="text-center max-w-3xl mx-auto mb-16"
                     >
-                        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6">
-                            Meet the Team
+                        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6 flex items-center justify-center gap-4">
+                            <span>Meet the Team Liquid</span>
+                            <motion.div
+                                className="relative"
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 200,
+                                    damping: 15,
+                                    delay: 0.3
+                                }}
+                                whileHover={{
+                                    scale: 1.15,
+                                    rotate: [0, -5, 5, 0],
+                                    transition: { duration: 0.4 }
+                                }}
+                            >
+                                {/* Glowing ring effect */}
+                                <motion.div
+                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-violet-400 to-purple-600 blur-md opacity-60"
+                                    animate={{
+                                        scale: [1, 1.2, 1],
+                                        opacity: [0.6, 0.8, 0.6],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                    }}
+                                    style={{ width: 70, height: 70, left: -5, top: -5 }}
+                                />
+                                {/* Logo container with border */}
+                                <div className="relative w-[60px] h-[60px] rounded-full overflow-hidden border-2 border-purple-400/50 bg-background/80 backdrop-blur-sm p-1.5 shadow-lg shadow-purple-500/20">
+                                    <Image
+                                        src="/team-liquid-logo.png"
+                                        alt="Team Liquid Logo"
+                                        fill
+                                        className="object-contain p-1"
+                                        unoptimized
+                                    />
+                                </div>
+                                {/* Sparkle effects */}
+                                <motion.div
+                                    className="absolute -top-1 -right-1 w-3 h-3 bg-violet-400 rounded-full"
+                                    animate={{
+                                        scale: [0, 1, 0],
+                                        opacity: [0, 1, 0],
+                                    }}
+                                    transition={{
+                                        duration: 1.5,
+                                        repeat: Infinity,
+                                        delay: 0.5,
+                                    }}
+                                />
+                                <motion.div
+                                    className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-400 rounded-full"
+                                    animate={{
+                                        scale: [0, 1, 0],
+                                        opacity: [0, 1, 0],
+                                    }}
+                                    transition={{
+                                        duration: 1.5,
+                                        repeat: Infinity,
+                                        delay: 1,
+                                    }}
+                                />
+                            </motion.div>
                         </h1>
                         <p className="text-lg text-muted-foreground">
                             The passionate individuals behind SkillTwin working to bridge the education-employment gap.
@@ -91,7 +158,13 @@ export default function TeamPage() {
                                 {/* Photo Placeholder */}
                                 <div className="relative w-32 h-32 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border-2 border-border group-hover:border-primary transition-colors">
                                     {member.image ? (
-                                        <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                                        <Image
+                                            src={member.image}
+                                            alt={member.name}
+                                            fill
+                                            className="object-cover"
+                                            unoptimized
+                                        />
                                     ) : (
                                         <User className="w-12 h-12 text-primary/50" />
                                     )}

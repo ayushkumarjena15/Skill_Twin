@@ -13,14 +13,12 @@ import { getAnalysisHistory, deleteAnalysis } from "@/lib/db"
 import type { AnalysisHistory } from "@/lib/supabase"
 import { BackButton } from "@/components/ui/back-button"
 import {
-  Sparkles,
-  ArrowLeft,
+  ArrowRight,
   Loader2,
   Trash2,
   Calendar,
   Briefcase,
   TrendingUp,
-  Eye,
   History as HistoryIcon,
   AlertCircle
 } from "lucide-react"
@@ -103,15 +101,17 @@ function HistoryContent() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-primary" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="SkillTwin Logo"
+                className="w-9 h-9 rounded-lg object-contain"
+              />
               <span className="font-bold text-xl">SkillTwin</span>
             </Link>
 
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <BackButton label="Dashboard" href="/dashboard" />
+              <BackButton />
               <UserNav />
             </div>
           </div>
@@ -174,77 +174,83 @@ function HistoryContent() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                 >
-                  <Card className="border-border/50 hover:border-primary/30 transition-colors">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        {/* Left Side */}
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <Briefcase className="h-5 w-5 text-primary" />
-                            <h3 className="font-semibold text-lg">{item.job_role}</h3>
-                            <Badge variant="outline" className={getScoreBadge(item.employability_score)}>
-                              {item.employability_score}% Match
-                            </Badge>
+                  <Card className="border-border/50 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all cursor-pointer group relative">
+                    <Link href={`/dashboard/results/${item.id}`}>
+                      <CardContent className="p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          {/* Left Side */}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <Briefcase className="h-5 w-5 text-primary" />
+                              <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">{item.job_role}</h3>
+                              <Badge variant="outline" className={getScoreBadge(item.employability_score)}>
+                                {item.employability_score}% Match
+                              </Badge>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="h-4 w-4" />
+                                {new Date(item.created_at).toLocaleDateString()}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <TrendingUp className="h-4 w-4" />
+                                Core: {item.core_skills_match}%
+                              </span>
+                              <span>
+                                {item.matched_skills?.length || 0} matched, {item.missing_skills?.length || 0} missing
+                              </span>
+                            </div>
+
+                            {/* Skills Preview */}
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {item.matched_skills?.slice(0, 4).map((skill, i) => (
+                                <Badge key={i} variant="secondary" className="bg-green-500/10 text-green-600 text-xs">
+                                  ✓ {skill}
+                                </Badge>
+                              ))}
+                              {item.missing_skills?.slice(0, 3).map((skill, i) => (
+                                <Badge key={i} variant="secondary" className="bg-red-500/10 text-red-500 text-xs">
+                                  ✗ {skill}
+                                </Badge>
+                              ))}
+                              {(item.matched_skills?.length || 0) + (item.missing_skills?.length || 0) > 7 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{(item.matched_skills?.length || 0) + (item.missing_skills?.length || 0) - 7} more
+                                </Badge>
+                              )}
+                            </div>
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              {new Date(item.created_at).toLocaleDateString()}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <TrendingUp className="h-4 w-4" />
-                              Core: {item.core_skills_match}%
-                            </span>
-                            <span>
-                              {item.matched_skills?.length || 0} matched, {item.missing_skills?.length || 0} missing
-                            </span>
-                          </div>
-
-                          {/* Skills Preview */}
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {item.matched_skills?.slice(0, 4).map((skill, i) => (
-                              <Badge key={i} variant="secondary" className="bg-green-500/10 text-green-600 text-xs">
-                                ✓ {skill}
-                              </Badge>
-                            ))}
-                            {item.missing_skills?.slice(0, 3).map((skill, i) => (
-                              <Badge key={i} variant="secondary" className="bg-red-500/10 text-red-500 text-xs">
-                                ✗ {skill}
-                              </Badge>
-                            ))}
-                            {(item.matched_skills?.length || 0) + (item.missing_skills?.length || 0) > 7 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{(item.matched_skills?.length || 0) + (item.missing_skills?.length || 0) - 7} more
-                              </Badge>
-                            )}
+                          {/* Right Side - View indicator */}
+                          <div className="flex items-center gap-2 text-muted-foreground group-hover:text-primary transition-colors">
+                            <span className="text-sm hidden sm:inline">View Details</span>
+                            <ArrowRight className="h-5 w-5" />
                           </div>
                         </div>
+                      </CardContent>
+                    </Link>
 
-                        {/* Right Side - Actions */}
-                        <div className="flex items-center gap-2">
-                          <Button asChild variant="outline" size="sm">
-                            <Link href={`/history/${item.id}`}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              View
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(item.id)}
-                            disabled={deletingId === item.id}
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            {deletingId === item.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
+                    {/* Delete button - separate from the link */}
+                    <div className="absolute top-4 right-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleDelete(item.id)
+                        }}
+                        disabled={deletingId === item.id}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        {deletingId === item.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </Card>
                 </motion.div>
               ))}

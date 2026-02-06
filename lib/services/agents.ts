@@ -378,6 +378,7 @@ JSON Format:
     matchingJobs,
     agentsUsed,
     allUserSkills: allStudentSkills,
-    timetable
+    timetable,
+    githubData
   }
 }

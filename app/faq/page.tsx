@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Navbar } from "@/components/landing/navbar"
 import { Footer } from "@/components/landing/footer"
-import { ChevronDown, HelpCircle, Sparkles } from "lucide-react"
+import { ChevronDown, HelpCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -217,9 +217,6 @@ export default function FAQPage() {
             >
               {/* Category Header */}
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                </div>
                 {category.category}
               </h2>
 

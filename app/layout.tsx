@@ -1,23 +1,26 @@
 import type { Metadata } from "next"
-import { Space_Grotesk, Plus_Jakarta_Sans } from "next/font/google"
+import { Inter, JetBrains_Mono } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
+import { Toaster } from "@/components/ui/sonner"
 import "@/app/globals.css"
 
-const spaceGrotesk = Space_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-space",
+  variable: "--font-inter",
 })
 
-const jakarta = Plus_Jakarta_Sans({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-jakarta",
+  variable: "--font-mono",
 })
 
 export const metadata: Metadata = {
   title: "SkillTwin",
   description: "AI-powered skill analysis and roadmap generator",
 }
+
+import { FloatingActionMenu } from "@/components/ui/floating-action-menu"
 
 export default function RootLayout({
   children,
@@ -26,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${jakarta.className} ${spaceGrotesk.variable} ${jakarta.variable}`}>
+      <body className={`${inter.className} ${inter.variable} ${jetbrainsMono.variable}`}>
         <AuthProvider>
           <ThemeProvider
             attribute="class"
@@ -35,6 +38,8 @@ export default function RootLayout({
             disableTransitionOnChange={false}
           >
             {children}
+            <Toaster />
+            <FloatingActionMenu />
           </ThemeProvider>
         </AuthProvider>
       </body>

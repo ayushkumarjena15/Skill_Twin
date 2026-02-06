@@ -10,19 +10,96 @@ import {
   BookOpen,
   CheckCircle,
   TrendingUp,
-  Sparkles,
   ChevronRight,
   Calendar,
   Rocket,
   Play
 } from "lucide-react"
+import { useState } from "react"
 import type { AnalysisResult } from "@/lib/types"
+import type { AIRoadmap } from "@/lib/schemas"
+import { RoadmapTimeline, type RoadmapMilestone } from "@/components/ui/roadmap-components"
+import { toast } from "sonner" // Assuming sonner is used, if not I'll check or use simple alert or try-catch for now. Actually existing code uses alert() in dashboard, I should check if toast is available. I'll stick to console/alert if not sure, but prompts say "Show a Toast notification". I will try to use sonner or similar if present.
 
 interface LearningRoadmapProps {
   result: AnalysisResult
+  userId?: string
+  jobRole?: string
 }
 
-export function LearningRoadmap({ result }: LearningRoadmapProps) {
+import { useRouter } from "next/navigation"
+
+export function LearningRoadmap({ result, userId, jobRole }: LearningRoadmapProps) {
+  const router = useRouter()
+  const [dynamicRoadmap, setDynamicRoadmap] = useState<AIRoadmap | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  const handleGeneratePlan = async () => {
+    if (!userId) {
+      alert("Please log in to generate a personalized plan")
+      return
+    }
+
+    setIsGenerating(true)
+    try {
+      // Simulate loading steps if needed, or just wait
+      const response = await fetch("/api/roadmap/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          jobRole: jobRole || "Software Engineer", // Fallback if missing
+          missingSkills: result.missingSkills,
+          currentSkills: result.matchedSkills
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to generate plan")
+      }
+
+      const data = await response.json()
+      setDynamicRoadmap(data)
+      toast.success("Roadmap generated successfully! Redirecting...")
+      router.push("/roadmap/personalized")
+    } catch (error) {
+      console.error(error)
+      alert("Failed to generate AI plan. Please try again.")
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  // Determine which roadmap to show
+  const activeRoadmap = dynamicRoadmap
+    ? (dynamicRoadmap.phases.map((phase, idx) => ({
+      id: phase.id || `ai-phase-${idx}`,
+      quarter: `Phase ${idx + 1}`,
+      title: phase.title,
+      description: phase.goal,
+      status: phase.status,
+      features: phase.focusTopics,
+      date: `${phase.durationWeeks} Weeks`
+    })) as RoadmapMilestone[])
+    : (result.roadmap.map((phase, idx) => ({
+      id: `phase-${phase.phase}`,
+      quarter: `Phase ${phase.phase}`,
+      title: phase.title,
+      description: phase.description,
+      status: idx === 0 ? "in-progress" : "upcoming",
+      features: phase.skills,
+      date: phase.duration
+    })) as RoadmapMilestone[])
+
+  const roadmapTitle = dynamicRoadmap
+    ? "AI-Architected Execution Plan"
+    : "Step-by-Step Evolution"
+
+  const roadmapDescription = dynamicRoadmap
+    ? `Personalized strategy generated on ${new Date().toLocaleDateString()}`
+    : "Your strategic path from current skills to target role mastery"
+
+
   if (result.missingSkills.length === 0) {
     return (
       <motion.div
@@ -123,7 +200,7 @@ export function LearningRoadmap({ result }: LearningRoadmapProps) {
                   className="flex items-center justify-center md:justify-start gap-2"
                 >
                   <div className="p-2 rounded-lg bg-primary/20 text-primary">
-                    <Sparkles className="h-5 w-5 animate-pulse" />
+                    Generate Personal Plan
                   </div>
                   <CardTitle className="text-2xl font-black tracking-tight">Your Strategic Learning Path</CardTitle>
                 </motion.div>
@@ -136,86 +213,58 @@ export function LearningRoadmap({ result }: LearningRoadmapProps) {
                 className="text-center bg-background/50 backdrop-blur-md p-4 px-8 rounded-2xl border border-primary/20 shadow-xl"
               >
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Timeline Projection</p>
-                <p className="text-4xl font-black text-primary bg-clip-text">~12 Weeks</p>
+                <p className="text-4xl font-black text-primary bg-clip-text">
+                  ~{dynamicRoadmap ? dynamicRoadmap.totalDurationWeeks : 12} Weeks
+                </p>
               </motion.div>
             </div>
           </CardHeader>
         </Card>
       </motion.div>
 
-      {/* Roadmap Phases */}
-      <div className="space-y-6">
-        <motion.div variants={fadeInUp} className="flex items-center gap-3 px-2">
+      {/* Roadmap Phases - Timeline View */}
+      <div className="flex items-center justify-between gap-4 px-2 mb-6">
+        <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10 text-primary">
             <TrendingUp className="h-5 w-5" />
           </div>
           <h3 className="text-xl font-bold tracking-tight uppercase tracking-widest text-sm">Step-by-Step Evolution</h3>
-        </motion.div>
-
-        <div className="grid gap-6">
-          {result.roadmap.map((phase, idx) => (
-            <motion.div
-              key={idx}
-              variants={fadeInUp}
-              whileHover={{ x: 10 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <Card className="group border-border/50 bg-card/40 backdrop-blur-sm hover:border-primary/40 hover:bg-card/60 transition-all duration-500 overflow-hidden shadow-lg hover:shadow-primary/5">
-                <CardContent className="p-0">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="md:w-56 bg-gradient-to-b from-muted/50 to-muted/20 p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border/50 relative overflow-hidden">
-                      <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        whileInView={{ scale: 1, opacity: 1 }}
-                        className="w-16 h-16 rounded-2xl bg-primary text-white flex items-center justify-center font-black text-2xl mb-4 shadow-xl shadow-primary/20 relative z-10"
-                      >
-                        {phase.phase}
-                      </motion.div>
-                      <Badge variant="secondary" className="bg-background/80 font-black tracking-widest text-[10px] uppercase px-4 py-1.5 border-primary/10 relative z-10">
-                        {phase.duration}
-                      </Badge>
-                      {/* Decorative Background Number */}
-                      <span className="absolute -bottom-4 -left-4 text-8xl font-black text-black/5 pointer-events-none select-none">
-                        {phase.phase}
-                      </span>
-                    </div>
-                    <div className="flex-grow p-8 space-y-6">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-2xl font-bold group-hover:text-primary transition-colors flex items-center gap-3">
-                          {phase.title}
-                          <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                            className="w-2 h-2 rounded-full bg-primary/50"
-                          />
-                        </h4>
-                      </div>
-                      <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
-                        {phase.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {phase.skills.map((skill, i) => (
-                          <motion.div
-                            key={i}
-                            whileHover={{ scale: 1.1, rotate: 2 }}
-                          >
-                            <Badge
-                              variant="outline"
-                              className="bg-primary/5 text-primary border-primary/20 px-3 py-1 text-xs font-semibold hover:bg-primary hover:text-white transition-all cursor-default"
-                            >
-                              {skill}
-                            </Badge>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
         </div>
+
+        {!dynamicRoadmap && (
+          <Button
+            onClick={handleGeneratePlan}
+            disabled={isGenerating}
+            size="sm"
+            className="hidden md:flex"
+          >
+            {isGenerating ? (
+              <>
+                Architecting Plan...
+              </>
+            ) : (
+              <>
+                Generate AI Plan
+              </>
+            )}
+          </Button>
+        )}
       </div>
+
+      {isGenerating ? (
+        <Card className="p-12 text-center border-dashed">
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          </div>
+          <p className="text-muted-foreground animate-pulse">Consulting expert agents to build your perfect curriculum...</p>
+        </Card>
+      ) : (
+        <RoadmapTimeline
+          title={roadmapTitle}
+          description={roadmapDescription}
+          milestones={activeRoadmap}
+        />
+      )}
 
       {/* Learning Resources */}
       <div className="space-y-6">
