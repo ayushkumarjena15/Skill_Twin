@@ -15,6 +15,7 @@ import { Problem } from "@/components/landing/problem"
 import { HowItWorks } from "@/components/landing/how-it-works"
 import { Features } from "@/components/landing/features"
 import { SDGSection } from "@/components/landing/sdg-section"
+import { ReviewsSection } from "@/components/landing/reviews-section"
 import { CTA } from "@/components/landing/cta"
 import { SectionDivider } from "@/components/landing/section-divider"
 
@@ -80,8 +81,11 @@ export default function Home() {
       <Features />
       <SectionDivider />
 
-      {/* SDG Section */}
       <SDGSection />
+      <SectionDivider />
+
+      {/* Reviews Section */}
+      <ReviewsSection />
       <SectionDivider />
 
       {/* Call to Action */}

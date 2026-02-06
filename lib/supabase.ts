@@ -60,3 +60,12 @@ export interface SavedJob {
   match_score: number
   saved_at: string
 }
+
+export interface Review {
+  id: string
+  name: string
+  designation?: string
+  rating: number
+  message: string
+  created_at: string
+}

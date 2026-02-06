@@ -5,6 +5,7 @@ import { Github, Twitter, Linkedin } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { SuggestionsDialog } from "@/components/suggestions-dialog"
+import { ReviewDialog } from "@/components/review-dialog"
 import { ScrollLink } from "@/components/scroll-link"
 
 const footerLinks = {
@@ -177,10 +178,17 @@ export function Footer() {
                 <li>
                   <button
                     onClick={() => setIsSuggestionsOpen(true)}
-                    className="text-sm text-zinc-400 hover:text-white transition-colors"
+                    className="text-sm text-zinc-400 hover:text-white transition-colors text-left"
                   >
                     Suggestions
                   </button>
+                </li>
+                <li>
+                  <ReviewDialog>
+                    <button className="text-sm text-zinc-400 hover:text-white transition-colors text-left">
+                      Leave a Review
+                    </button>
+                  </ReviewDialog>
                 </li>
               </ul>
             </div>

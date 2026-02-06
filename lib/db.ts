@@ -295,3 +295,26 @@ export async function updateUserRoadmap(userId: string, roadmap: any) {
     throw new Error("No analysis history found to update roadmap");
   }
 }
+
+// =============================================
+// REVIEW FUNCTIONS
+// =============================================
+
+export async function addReview(review: {
+  name: string
+  rating: number
+  message: string
+}) {
+  return await supabase
+    .from('reviews')
+    .insert(review)
+    .select()
+    .single()
+}
+
+export async function getReviews() {
+  return await supabase
+    .from('reviews')
+    .select('*')
+    .order('created_at', { ascending: false })
+}
